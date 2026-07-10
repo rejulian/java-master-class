@@ -9,7 +9,10 @@ public class CarBookingDao {
         return bookings;
     }
 
-    public void addBooking(CarBooking booking) throws ArrayIndexOutOfBoundsException{
+    /**
+     * @throws ArrayIndexOutOfBoundsException if the booking list is full
+     */
+    public void addBooking(CarBooking booking) {
         if(nextIndexOfBooking >= MAX_SIZE){
             throw new ArrayIndexOutOfBoundsException("Maximum number of bookings reached");
         }
