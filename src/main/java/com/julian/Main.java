@@ -1,10 +1,16 @@
 package com.julian;
 
 import com.julian.booking.CarBooking;
+import com.julian.booking.CarBookingArrayDataAccessService;
+import com.julian.booking.CarBookingDao;
 import com.julian.booking.CarBookingService;
 import com.julian.car.Car;
+import com.julian.car.CarArrayDataAccessService;
+import com.julian.car.CarDao;
 import com.julian.car.CarService;
 import com.julian.user.User;
+import com.julian.user.UserArrayDataAccessService;
+import com.julian.user.UserDao;
 import com.julian.user.UserService;
 
 import java.time.LocalDate;
@@ -14,9 +20,14 @@ import java.util.Scanner;
 public class Main {
 
     private static final Scanner SCANNER = new Scanner(System.in);
-    private static final UserService USER_SERVICE = new UserService();
-    private static final CarService CAR_SERVICE = new CarService();
-    private static final CarBookingService BOOKING_SERVICE = new CarBookingService();
+
+    private static final UserDao userArrayDataAccessService = new UserArrayDataAccessService();
+    private static final CarDao carArrayDataAccessService = new CarArrayDataAccessService();
+    private static final CarBookingDao carBookingArrayDataAccessService = new CarBookingArrayDataAccessService();
+
+    private static final UserService USER_SERVICE = new UserService(userArrayDataAccessService);
+    private static final CarService CAR_SERVICE = new CarService(carArrayDataAccessService);
+    private static final CarBookingService BOOKING_SERVICE = new CarBookingService(carBookingArrayDataAccessService, CAR_SERVICE, USER_SERVICE);
 
     public static void main(String[] args) {
         boolean running = true;
