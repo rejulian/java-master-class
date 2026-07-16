@@ -1,11 +1,6 @@
 package com.julian.booking;
 
-import com.julian.car.Car;
 import com.julian.user.User;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.UUID;
 
 public class CarBookingArrayDataAccessService implements CarBookingDao{
     private static final int MAX_SIZE = 5;

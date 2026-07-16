@@ -1,9 +1,6 @@
 package com.julian;
 
-import com.julian.booking.CarBooking;
-import com.julian.booking.CarBookingArrayDataAccessService;
-import com.julian.booking.CarBookingDao;
-import com.julian.booking.CarBookingService;
+import com.julian.booking.*;
 import com.julian.car.Car;
 import com.julian.car.CarArrayDataAccessService;
 import com.julian.car.CarDao;
@@ -23,11 +20,12 @@ public class Main {
 
     private static final UserDao userArrayDataAccessService = new UserArrayDataAccessService();
     private static final CarDao carArrayDataAccessService = new CarArrayDataAccessService();
-    private static final CarBookingDao carBookingArrayDataAccessService = new CarBookingArrayDataAccessService();
+//    private static final CarBookingDao carBookingArrayDataAccessService = new CarBookingArrayDataAccessService();
+    private static final CarBookingDao carBookingFileDataAccessService = new CarBookingFileDataAccessService();
 
     private static final UserService USER_SERVICE = new UserService(userArrayDataAccessService);
     private static final CarService CAR_SERVICE = new CarService(carArrayDataAccessService);
-    private static final CarBookingService BOOKING_SERVICE = new CarBookingService(carBookingArrayDataAccessService, CAR_SERVICE, USER_SERVICE);
+    private static final CarBookingService BOOKING_SERVICE = new CarBookingService(carBookingFileDataAccessService, CAR_SERVICE, USER_SERVICE);
 
     public static void main(String[] args) {
         boolean running = true;
