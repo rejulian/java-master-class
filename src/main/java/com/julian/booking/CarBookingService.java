@@ -16,11 +16,10 @@ public class CarBookingService {
     private CarService carService;
     private UserService userService;
 
-    public CarBookingService() {
-        this.carBookingDao = new CarBookingDao();
-        this.carService = new CarService();
-        this.userService = new UserService();
-
+    public CarBookingService(CarBookingDao carBookingDao, CarService carService, UserService userService) {
+        this.carBookingDao = carBookingDao;
+        this.carService = carService;
+        this.userService = userService;
     }
 
     public CarBooking[] getBookings() {
@@ -28,24 +27,7 @@ public class CarBookingService {
     }
 
     public CarBooking[] getUserBookings(User user) {
-        CarBooking[] bookings = getBookings();
-
-        int count = 0;
-        for (CarBooking booking : bookings) {
-            if (booking != null && booking.getUser().equals(user)) {
-                count++;
-            }
-        }
-
-        CarBooking[] userBookings = new CarBooking[count];
-        int index = 0;
-        for (CarBooking booking : bookings) {
-            if (booking != null && booking.getUser().equals(user)) {
-                userBookings[index] = booking;
-                index++;
-            }
-        }
-        return userBookings;
+        return carBookingDao.getUserBookings(user);
     }
 
     public void deleteBooking(CarBooking booking){

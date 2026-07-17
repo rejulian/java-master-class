@@ -3,12 +3,16 @@ package com.julian.booking;
 import com.julian.car.Car;
 import com.julian.user.User;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class CarBooking {
+public class CarBooking implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private UUID id;
     private User user;
     private Car car;

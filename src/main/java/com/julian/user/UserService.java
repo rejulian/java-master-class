@@ -6,8 +6,8 @@ public class UserService {
 
     private UserDao userDao;
 
-    public UserService() {
-        this.userDao = new UserDao();
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     public User[] getUsers() {
