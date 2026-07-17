@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public class CarBookingFileDataAccessService implements CarBookingDao, Serializable {
 
-    private static final String FILE_PATH = "src/main/java/com/julian/bookings.txt";
+    private static final String FILE_PATH = "src/main/resources/bookings.txt";
 
     @Override
     public CarBooking[] getBookings() {

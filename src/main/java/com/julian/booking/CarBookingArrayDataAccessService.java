@@ -27,7 +27,7 @@ public class CarBookingArrayDataAccessService implements CarBookingDao{
     @Override
     public void deleteBooking(CarBooking booking) {
         for (int i = 0; i < nextIndexOfBooking; i++) {
-            if (bookings[i].equals(booking)) {
+            if (bookings[i].getId().equals(booking.getId())) {
                 for (int j = i; j < nextIndexOfBooking - 1; j++) {
                     bookings[j] = bookings[j + 1];
                 }
