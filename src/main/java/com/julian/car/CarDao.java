@@ -1,6 +1,8 @@
 package com.julian.car;
 
+import java.util.List;
+
 public interface CarDao {
-    Car[] getCars();
-    Car[] getElectricCars();
+    List<Car> getCars();
+    List<Car> getElectricCars();
 }

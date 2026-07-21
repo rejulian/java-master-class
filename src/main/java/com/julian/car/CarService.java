@@ -1,5 +1,7 @@
 package com.julian.car;
 
+import java.util.List;
+
 public class CarService {
 
     private CarDao carDao;
@@ -8,11 +10,11 @@ public class CarService {
         this.carDao = carDao;
     }
 
-    public Car[] getCars(){
+    public List<Car> getCars(){
         return carDao.getCars();
     }
 
-    public Car[] getElectricCars(){
+    public List<Car> getElectricCars(){
         return carDao.getElectricCars();
     }
 }
