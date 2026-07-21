@@ -16,7 +16,7 @@ public class CarBookingFileDataAccessService implements CarBookingDao, Serializa
         File file = new File(FILE_PATH);
 
         if (!file.exists() || file.length() == 0) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         try (FileInputStream fileInputStream = new FileInputStream(file);
