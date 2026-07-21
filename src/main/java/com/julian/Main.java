@@ -12,6 +12,8 @@ import com.julian.user.UserService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -20,12 +22,12 @@ public class Main {
 
     private static final UserDao userArrayDataAccessService = new UserArrayDataAccessService();
     private static final CarDao carArrayDataAccessService = new CarArrayDataAccessService();
-//    private static final CarBookingDao carBookingArrayDataAccessService = new CarBookingArrayDataAccessService();
-    private static final CarBookingDao carBookingFileDataAccessService = new CarBookingFileDataAccessService();
+    private static final CarBookingDao carBookingArrayDataAccessService = new CarBookingArrayDataAccessService();
+//    private static final CarBookingDao carBookingFileDataAccessService = new CarBookingFileDataAccessService();
 
     private static final UserService USER_SERVICE = new UserService(userArrayDataAccessService);
     private static final CarService CAR_SERVICE = new CarService(carArrayDataAccessService);
-    private static final CarBookingService BOOKING_SERVICE = new CarBookingService(carBookingFileDataAccessService, CAR_SERVICE, USER_SERVICE);
+    private static final CarBookingService BOOKING_SERVICE = new CarBookingService(carBookingArrayDataAccessService, CAR_SERVICE, USER_SERVICE);
 
     public static void main(String[] args) {
         boolean running = true;
@@ -67,18 +69,18 @@ public class Main {
         User user = pickUser();
         if (user == null) return;
 
-        Car[] available = BOOKING_SERVICE.getAvailableCars();
-        if (available.length == 0) {
+        List<Car> available = BOOKING_SERVICE.getAvailableCars();
+        if (available.isEmpty()) {
             System.out.println("No cars available to book.");
             return;
         }
 
         System.out.println("Available cars:");
-        for (int i = 0; i < available.length; i++) {
-            printCar(available[i], i + 1);
+        for (int i = 0; i < available.size(); i++) {
+            printCar(available.get(i), i + 1);
         }
-        int carChoice = readIntInRange("Pick a car: ", 1, available.length);
-        Car car = available[carChoice - 1];
+        int carChoice = readIntInRange("Pick a car: ", 1, available.size());
+        Car car = available.get(carChoice - 1);
 
         LocalDate start = readDate("Start date (YYYY-MM-DD): ");
         LocalDate end = readDate("End date   (YYYY-MM-DD): ");
@@ -87,16 +89,16 @@ public class Main {
             return;
         }
 
-        int before = nonNull(BOOKING_SERVICE.getBookings()).length;
+        int before = nonNull(BOOKING_SERVICE.getBookings()).size();
         BOOKING_SERVICE.bookCar(user.getId(), car, start, end);
-        CarBooking[] after = nonNull(BOOKING_SERVICE.getBookings());
+        List<CarBooking> after = nonNull(BOOKING_SERVICE.getBookings());
 
-        if (after.length == before) {
+        if (after.size() == before) {
             System.out.println("Booking failed (car became unavailable or storage full).");
             return;
         }
 
-        CarBooking created = after[after.length - 1];
+        CarBooking created = after.get(after.size() - 1);
         System.out.println("Booking confirmed:");
         printBooking(created, 1);
     }
@@ -105,18 +107,18 @@ public class Main {
         System.out.println();
         System.out.println("-- Delete Booking --");
 
-        CarBooking[] bookings = nonNull(BOOKING_SERVICE.getBookings());
-        if (bookings.length == 0) {
+        List<CarBooking> bookings = nonNull(BOOKING_SERVICE.getBookings());
+        if (bookings.size() == 0) {
             System.out.println("No bookings to delete.");
             return;
         }
 
         System.out.println("Bookings:");
-        for (int i = 0; i < bookings.length; i++) {
-            printBooking(bookings[i], i + 1);
+        for (int i = 0; i < bookings.size(); i++) {
+            printBooking(bookings.get(i), i + 1);
         }
-        int choice = readIntInRange("Pick a booking to delete: ", 1, bookings.length);
-        CarBooking target = bookings[choice - 1];
+        int choice = readIntInRange("Pick a booking to delete: ", 1, bookings.size());
+        CarBooking target = bookings.get(choice - 1);
 
         BOOKING_SERVICE.deleteBooking(target);
         System.out.println("Deleted booking " + target.getId() + ".");
@@ -129,14 +131,14 @@ public class Main {
         User user = pickUser();
         if (user == null) return;
 
-        CarBooking[] bookings = BOOKING_SERVICE.getUserBookings(user);
-        if (bookings.length == 0) {
+        List<CarBooking> bookings = BOOKING_SERVICE.getUserBookings(user);
+        if (bookings.size() == 0) {
             System.out.println(user.getName() + " has no bookings.");
             return;
         }
         System.out.println("Bookings for " + user.getName() + ":");
-        for (int i = 0; i < bookings.length; i++) {
-            printBooking(bookings[i], i + 1);
+        for (int i = 0; i < bookings.size(); i++) {
+            printBooking(bookings.get(i), i + 1);
         }
     }
 
@@ -144,13 +146,13 @@ public class Main {
         System.out.println();
         System.out.println("-- All Bookings --");
 
-        CarBooking[] bookings = nonNull(BOOKING_SERVICE.getBookings());
-        if (bookings.length == 0) {
+        List<CarBooking> bookings = nonNull(BOOKING_SERVICE.getBookings());
+        if (bookings.size() == 0) {
             System.out.println("No bookings in the system.");
             return;
         }
-        for (int i = 0; i < bookings.length; i++) {
-            printBooking(bookings[i], i + 1);
+        for (int i = 0; i < bookings.size(); i++) {
+            printBooking(bookings.get(i), i + 1);
         }
     }
 
@@ -158,13 +160,13 @@ public class Main {
         System.out.println();
         System.out.println("-- Available Cars --");
 
-        Car[] cars = BOOKING_SERVICE.getAvailableCars();
-        if (cars.length == 0) {
+        List<Car> cars = BOOKING_SERVICE.getAvailableCars();
+        if (cars.size() == 0) {
             System.out.println("No cars available.");
             return;
         }
-        for (int i = 0; i < cars.length; i++) {
-            printCar(cars[i], i + 1);
+        for (int i = 0; i < cars.size(); i++) {
+            printCar(cars.get(i), i + 1);
         }
     }
 
@@ -172,9 +174,9 @@ public class Main {
         System.out.println();
         System.out.println("-- Available Electric Cars --");
 
-        Car[] cars = CAR_SERVICE.getElectricCars();
+        List<Car> cars = CAR_SERVICE.getElectricCars();
 
-        if (cars.length == 0) {
+        if (cars.size() == 0) {
             System.out.println("No available electric cars.");
             return;
         }
@@ -188,24 +190,24 @@ public class Main {
         System.out.println();
         System.out.println("-- All Users --");
 
-        User[] users = USER_SERVICE.getUsers();
-        for (int i = 0; i < users.length; i++) {
-            printUser(users[i], i + 1);
+        List<User> users = USER_SERVICE.getUsers();
+        for (int i = 0; i < users.size(); i++) {
+            printUser(users.get(i), i + 1);
         }
     }
 
     private static User pickUser() {
-        User[] users = USER_SERVICE.getUsers();
-        if (users.length == 0) {
+        List<User> users = USER_SERVICE.getUsers();
+        if (users.isEmpty()) {
             System.out.println("No users registered.");
             return null;
         }
         System.out.println("Users:");
-        for (int i = 0; i < users.length; i++) {
-            printUser(users[i], i + 1);
+        for (int i = 0; i < users.size(); i++) {
+            printUser(users.get(i), i + 1);
         }
-        int choice = readIntInRange("Pick a user: ", 1, users.length);
-        return users[choice - 1];
+        int choice = readIntInRange("Pick a user: ", 1, users.size());
+        return users.get(choice - 1);
     }
 
     private static int readMenuChoice(int min, int max) {
@@ -240,15 +242,10 @@ public class Main {
         }
     }
 
-    private static CarBooking[] nonNull(CarBooking[] arr) {
-        int count = 0;
-        for (CarBooking b : arr) {
-            if (b != null) count++;
-        }
-        CarBooking[] out = new CarBooking[count];
-        int i = 0;
-        for (CarBooking b : arr) {
-            if (b != null) out[i++] = b;
+    private static List<CarBooking> nonNull(List<CarBooking> list) {
+        List<CarBooking> out = new ArrayList<>();
+        for (CarBooking b : list) {
+            if (b != null) out.add(b);
         }
         return out;
     }

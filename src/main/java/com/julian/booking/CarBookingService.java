@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CarBookingService {
@@ -22,11 +24,11 @@ public class CarBookingService {
         this.userService = userService;
     }
 
-    public CarBooking[] getBookings() {
+    public List<CarBooking> getBookings() {
         return carBookingDao.getBookings();
     }
 
-    public CarBooking[] getUserBookings(User user) {
+    public List<CarBooking> getUserBookings(User user) {
         return carBookingDao.getUserBookings(user);
     }
 
@@ -34,51 +36,38 @@ public class CarBookingService {
         carBookingDao.deleteBooking(booking);
     }
 
-    public Car[] getAvailableCars() {
-        Car[] cars = carService.getCars();
-        CarBooking[] bookings = getBookings();
+    public List<Car> getAvailableCars() {
+        List<Car> cars = carService.getCars();
+        List<CarBooking> bookings = getBookings();
 
-        if (bookings.length == 0) {
+        if (bookings.isEmpty()) {
             return cars;
         }
 
-        int count = 0;
+        List<Car> availableCars = new ArrayList<>();
         for (Car car : cars) {
             if (!isBooked(car, bookings)) {
-                count++;
-            }
-        }
-
-        Car[] availableCars = new Car[count];
-        int index = 0;
-        for (Car car : cars) {
-            if (!isBooked(car, bookings)) {
-                availableCars[index] = car;
-                index++;
+                availableCars.add(car);
             }
         }
         return availableCars;
     }
 
     public void bookCar(UUID userId, Car car, LocalDate startDate, LocalDate endDate){
-        try {
-            Car[] availableCars = getAvailableCars();
+        List<Car> availableCars = getAvailableCars();
 
-            User user = userService.getUserById(userId);
+        User user = userService.getUserById(userId);
 
-            for(Car availableCar : availableCars){
-                if(availableCar.getId().equals(car.getId())) {
-                    CarBooking newBooking = new CarBooking(UUID.randomUUID(), user, car, startDate, endDate, calculatePrice(car, startDate, endDate), BookingStatus.ACTIVE, LocalDateTime.now());
-                    carBookingDao.addBooking(newBooking);
-                    break;
-                }
+        for(Car availableCar : availableCars){
+            if(availableCar.getId().equals(car.getId())) {
+                CarBooking newBooking = new CarBooking(UUID.randomUUID(), user, car, startDate, endDate, calculatePrice(car, startDate, endDate), BookingStatus.ACTIVE, LocalDateTime.now());
+                carBookingDao.addBooking(newBooking);
+                break;
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println(e.getMessage());
         }
     }
 
-    private boolean isBooked(Car car, CarBooking[] bookings) {
+    private boolean isBooked(Car car, List<CarBooking> bookings) {
         for (CarBooking booking : bookings) {
             if (booking == null) continue;
             if (car.getId().equals(booking.getCar().getId()) && booking.getStatus().equals(BookingStatus.ACTIVE)) {

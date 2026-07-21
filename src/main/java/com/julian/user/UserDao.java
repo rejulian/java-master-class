@@ -1,8 +1,9 @@
 package com.julian.user;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface UserDao {
-    User[] getUsers();
+    List<User> getUsers();
     User findUserById(UUID id);
 }

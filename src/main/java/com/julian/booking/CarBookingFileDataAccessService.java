@@ -3,25 +3,27 @@ package com.julian.booking;
 import com.julian.user.User;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class CarBookingFileDataAccessService implements CarBookingDao, Serializable {
 
     private static final String FILE_PATH = "src/main/resources/bookings.txt";
 
     @Override
-    public CarBooking[] getBookings() {
+    public List<CarBooking> getBookings() {
         File file = new File(FILE_PATH);
 
         if (!file.exists() || file.length() == 0) {
-            return new CarBooking[0];
+            return Collections.emptyList();
         }
 
         try (FileInputStream fileInputStream = new FileInputStream(file);
              BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
              ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream)) {
 
-            return (CarBooking[]) objectInputStream.readObject();
+            return (List<CarBooking>) objectInputStream.readObject();
 
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("Error reading bookings from file", e);
@@ -30,66 +32,37 @@ public class CarBookingFileDataAccessService implements CarBookingDao, Serializa
 
     @Override
     public void addBooking(CarBooking booking) {
-        CarBooking[] bookings = getBookings();
-
-        CarBooking[] updated = Arrays.copyOf(bookings, bookings.length + 1);
-        updated[bookings.length] = booking;
-
-        writeToFile(updated);
+        List<CarBooking> bookings = getBookings();
+        bookings.add(booking);
+        writeToFile(bookings);
     }
 
     @Override
     public void deleteBooking(CarBooking booking) {
-        CarBooking[] bookings = getBookings();
-
-        int indexToRemove = -1;
-        for (int i = 0; i < bookings.length; i++) {
-            if (bookings[i].getId().equals(booking.getId())) {
-                indexToRemove = i;
-                break;
-            }
-        }
-
-        if (indexToRemove == -1) {
-            return;
-        }
-
-        CarBooking[] updated = new CarBooking[bookings.length - 1];
-        for (int i = 0, j = 0; i < bookings.length; i++) {
-            if (i == indexToRemove) continue;
-            updated[j++] = bookings[i];
-        }
-
-        writeToFile(updated);
+        List<CarBooking> bookings = getBookings();
+        bookings.remove(booking);
+        writeToFile(bookings);
     }
 
     @Override
-    public CarBooking[] getUserBookings(User user) {
-        CarBooking[] bookings = getBookings();
+    public List<CarBooking> getUserBookings(User user) {
+        List<CarBooking> bookings = getBookings();
+        List<CarBooking> userBookings = new ArrayList<>();
 
-        int count = 0;
         for (CarBooking booking : bookings) {
             if (booking.getUser().getId().equals(user.getId())) {
-                count++;
-            }
-        }
-
-        CarBooking[] userBookings = new CarBooking[count];
-        int index = 0;
-        for (CarBooking booking : bookings) {
-            if (booking.getUser().getId().equals(user.getId())) {
-                userBookings[index++] = booking;
+                userBookings.add(booking);
             }
         }
         return userBookings;
     }
 
-    private void writeToFile(CarBooking[] objectToWrite) {
+    private void writeToFile(List<CarBooking> listToWrite) {
         try (FileOutputStream fileOutputStream = new FileOutputStream(FILE_PATH);
              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(bufferedOutputStream)) {
 
-            objectOutputStream.writeObject(objectToWrite);
+            objectOutputStream.writeObject(listToWrite);
 
         } catch (IOException e) {
             throw new RuntimeException("Error writing bookings to file", e);
